@@ -1,10 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingEngine.Domain", "TradingEngine.Domain\TradingEngine.Domain.csproj", "{122C96FE-16F1-4D23-9DFC-49FD06B4AC82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingEngine", "TradingEngine\TradingEngine.csproj", "{122C96FE-16F1-4D23-9DFC-49FD06B4AC82}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{85C1353E-6160-4444-844F-5AAFBA346853}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingEngine.Domain.Tests", "TradingEngine.Domain.Tests\TradingEngine.Domain.Tests.csproj", "{13A4B56D-78DA-4D10-91D7-EF404C9F6400}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingEngine.Tests", "TradingEngine.Tests\TradingEngine.Tests.csproj", "{13A4B56D-78DA-4D10-91D7-EF404C9F6400}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
