@@ -1,36 +1,41 @@
 ﻿using System.Text;
+using TradingEngine.Enums;
 using TradingEngine.Models.Interfaces;
 
 namespace TradingEngine.Models;
 
 public class OrderBook : IOrderBook
 {
-	private readonly HashSet<IOrder> _orders;
 	private readonly SortedSet<IOrder> _buyOrders;
 	private readonly SortedSet<IOrder> _sellOrders;
+	private readonly Dictionary<OrderSide, SortedSet<IOrder>> _orderSideToSetDictionary;
 
 	public OrderBook(
-		IEqualityComparer<IOrder> orderEqualityComparer,
 		IComparer<IOrder> buyOrdersComparer,
 		IComparer<IOrder> sellOrdersComparer)
 	{
-		_orders = new HashSet<IOrder>(orderEqualityComparer);
 		_buyOrders = new SortedSet<IOrder>(buyOrdersComparer);
 		_sellOrders = new SortedSet<IOrder>(sellOrdersComparer);
+
+		_orderSideToSetDictionary = new Dictionary<OrderSide, SortedSet<IOrder>>
+		{
+			{ OrderSide.Buy, _buyOrders },
+			{ OrderSide.Sell, _sellOrders },
+		};
 	}
 
 	public void Add(IOrder order)
 	{
-		_orders.Add(order);
+		_orderSideToSetDictionary[order.Side].Add(order);
 	}
 
 	public override string ToString()
 	{
-		const string buyOrdersLabel = "Buy Orders: ";
 		var sb = new StringBuilder();
-		var ordersPrintout = _orders.Select(o => o.ToString());
-		sb.Append(buyOrdersLabel);
-		sb.Append(string.Join(Environment.NewLine, ordersPrintout));
+		var buyOrdersPrintout = _buyOrders.Select(o => o.ToString());
+		var sellOrdersPrintout = _sellOrders.Select(o => o.ToString());
+		sb.AppendLine($"Buy Orders: [{sb.Append(string.Join(Environment.NewLine, buyOrdersPrintout))}]");
+		sb.AppendLine($"Sell Orders: [{sb.Append(string.Join(Environment.NewLine, sellOrdersPrintout))}]");
 
 		return sb.ToString();
 	}

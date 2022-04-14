@@ -4,17 +4,11 @@ using NUnit.Framework;
 using TradingEngine.Models.Comparers;
 using TradingEngine.Models.Interfaces;
 
-namespace TradingEngine.Tests.Models.Comparers;
+namespace TradingEngine.Tests.Models.Comparers.Base;
 
-public class OrderEqualityComparerTests
+public abstract class OrderEqualityComparerTests
 {
-	private OrderEqualityComparer _orderEqualityComparer;
-
-	[SetUp]
-	public void SetUp()
-	{
-		_orderEqualityComparer = new OrderEqualityComparer();
-	}
+	protected OrderEqualityComparer OrderEqualityComparer;
 
 	[Test]
 	public void OrdersAreEqual_WhenIdsAreTheSame()
@@ -26,7 +20,7 @@ public class OrderEqualityComparerTests
 		var orderMock2 = CreateBasicOrderMock(id);
 
 		//Act
-		bool result = _orderEqualityComparer.Equals(orderMock1, orderMock2);
+		bool result = OrderEqualityComparer.Equals(orderMock1, orderMock2);
 
 		//Assert
 		result
@@ -42,7 +36,7 @@ public class OrderEqualityComparerTests
 		var orderMock1 = CreateBasicOrderMock(id);
 
 		//Act
-		bool result = _orderEqualityComparer.Equals(orderMock1, null);
+		bool result = OrderEqualityComparer.Equals(orderMock1, null);
 
 		//Assert
 		result
@@ -56,7 +50,7 @@ public class OrderEqualityComparerTests
 		//Arrange
 
 		//Act
-		bool result = _orderEqualityComparer.Equals(null, null);
+		bool result = OrderEqualityComparer.Equals(null, null);
 
 		//Assert
 		result

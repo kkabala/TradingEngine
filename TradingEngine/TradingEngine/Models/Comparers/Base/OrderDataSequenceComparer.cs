@@ -2,9 +2,8 @@ using TradingEngine.Models.Interfaces;
 
 namespace TradingEngine.Models.Comparers.Base;
 
-public abstract class BaseOrdersComparer : Comparer<IOrder>
+public abstract class OrderDataSequenceComparer : OrderEqualityComparer
 {
-
 	public override int Compare(IOrder? x, IOrder? y)
 	{
 		int result = 0;
@@ -12,6 +11,9 @@ public abstract class BaseOrdersComparer : Comparer<IOrder>
 
 		if (nullsFound)
 			return result;
+
+		if (Equals(x, y))
+			return 0;
 
 		if (x.Price == y.Price)
 			return CompareDates(x, y);
@@ -24,8 +26,6 @@ public abstract class BaseOrdersComparer : Comparer<IOrder>
 	{
 		if (x.Created < y.Created)
 			return -1;
-		if (x.Created == y.Created)
-			return 0;
 		return 1;
 	}
 

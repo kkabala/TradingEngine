@@ -1,18 +1,16 @@
 using FluentAssertions;
 using NUnit.Framework;
 using TradingEngine.Models.Comparers;
+using TradingEngine.Models.Comparers.Base;
 using TradingEngine.Tests.Models.Comparers.Base;
 
 namespace TradingEngine.Tests.Models.Comparers;
 
 [TestFixture]
-public class SellOrdersComparerTests : BaseOrdersComparerTests
+public class SellOrdersComparerTests : OrderDataSequenceComparerTests
 {
-	[SetUp]
-	public void SetUp()
-	{
-		Comparer = new SellOrdersComparer();
-	}
+	protected override OrderDataSequenceComparer CreateOrderDataSequenceComparer()
+		=> new SellOrdersComparer();
 
 	[TestCase(0, 1, -1)]
 	[TestCase(1, 2, -1)]

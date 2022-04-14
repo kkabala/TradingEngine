@@ -2,7 +2,7 @@ using TradingEngine.Models.Interfaces;
 
 namespace TradingEngine.Models.Comparers;
 
-public class OrderEqualityComparer : IEqualityComparer<IOrder>
+public abstract class OrderEqualityComparer : Comparer<IOrder>, IEqualityComparer<IOrder>
 {
 	public bool Equals(IOrder? x, IOrder? y) => x?.Id == y?.Id;
 
