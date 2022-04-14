@@ -1,16 +1,10 @@
-using System.Diagnostics.CodeAnalysis;
+using TradingEngine.Models.Comparers.Base;
 using TradingEngine.Models.Interfaces;
 
 namespace TradingEngine.Models.Comparers;
 
-public class SellOrdersComparer : Comparer<IOrder>
+public class SellOrdersComparer : BaseOrdersComparer
 {
-	public override int Compare(IOrder x, IOrder y)
-	{
-		if (x.Price < y.Price)
-			return -1;
-		if (x.Price == y.Price)
-			return 0;
-		return 1;
-	}
+	protected override int ComparePrices(IOrder? x, IOrder? y)
+		=> x.Price < y.Price ? -1 : 1;
 }
