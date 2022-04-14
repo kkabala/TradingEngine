@@ -1,5 +1,6 @@
 using TradingEngine.Models.Comparers.Base;
 using TradingEngine.Models.Interfaces;
+using TradingEngine.Models.Orders.Interfaces;
 
 namespace TradingEngine.Models.Comparers;
 

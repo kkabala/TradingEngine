@@ -1,6 +1,6 @@
-using TradingEngine.Models.Interfaces;
+using TradingEngine.Models.Orders.Interfaces;
 
-namespace TradingEngine.Models.Comparers;
+namespace TradingEngine.Models.Comparers.Base;
 
 public abstract class OrderEqualityComparer : Comparer<IOrder>, IEqualityComparer<IOrder>
 {

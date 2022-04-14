@@ -1,7 +1,8 @@
 using TradingEngine.Enums;
-using TradingEngine.Models.Interfaces;
+using TradingEngine.Models.Orders.Interfaces;
+using TradingEngine.Utilities;
 
-namespace TradingEngine.Models;
+namespace TradingEngine.Models.Orders;
 
 public class LimitOrder : IOrder
 {
@@ -11,7 +12,7 @@ public class LimitOrder : IOrder
 		Side = side;
 		Price = price;
 		Quantity = quantity;
-		Created = DateTime.Now;
+		Created = DateTimeProvider.Instance?.Now ?? DateTime.Now;
 	}
 
 	public string Id { get; }

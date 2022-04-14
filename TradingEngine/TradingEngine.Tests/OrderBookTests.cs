@@ -6,37 +6,38 @@ using Moq;
 using NUnit.Framework;
 using TradingEngine.Enums;
 using TradingEngine.Models;
-using TradingEngine.Models.Interfaces;
+using TradingEngine.Models.Orders.Interfaces;
 
 namespace TradingEngine.Tests;
 
 public class OrderBookTests
 {
-	private OrderBook _orderBook;
+	private OrderBook _orderBook = null!;
 
 	[SetUp]
 	public void Setup()
 	{
-		var baseBuyOrdersComparer = new Mock<IEqualityComparer<IOrder>>();
-		baseBuyOrdersComparer
+		var buyOrdersEqualityComparer = CreateEqualityAndSequenceComparer();
+		var sellOrdersEqualityComparer = CreateEqualityAndSequenceComparer();
+
+		_orderBook = new OrderBook(
+			buyOrdersEqualityComparer,
+			sellOrdersEqualityComparer);
+	}
+
+	private IComparer<IOrder> CreateEqualityAndSequenceComparer()
+	{
+		var baseOrdersComparer = new Mock<IEqualityComparer<IOrder>>();
+		baseOrdersComparer
 			.Setup(m => m.Equals(It.IsAny<IOrder>(), It.IsAny<IOrder>()))
 			.Returns(() => false);
 
-		var buyOrdersEqualityComparer = baseBuyOrdersComparer.As<IComparer<IOrder>>();
-		buyOrdersEqualityComparer
+		var ordersEqualityComparer = baseOrdersComparer.As<IComparer<IOrder>>();
+		ordersEqualityComparer
 			.Setup(m => m.Compare(It.IsAny<IOrder>(), It.IsAny<IOrder>()))
 			.Returns(-1);
 
-		var baseSellOrdersComparer = new Mock<IEqualityComparer<IOrder>>();
-		baseSellOrdersComparer
-			.Setup(m => m.Equals(It.IsAny<IOrder>(), It.IsAny<IOrder>()))
-			.Returns(false);
-
-		var sellOrdersEqualityComparer = baseSellOrdersComparer.As<IComparer<IOrder>>();
-
-		_orderBook = new OrderBook(
-			buyOrdersEqualityComparer.Object,
-			sellOrdersEqualityComparer.Object);
+		return ordersEqualityComparer.Object;
 	}
 
 	[Test]

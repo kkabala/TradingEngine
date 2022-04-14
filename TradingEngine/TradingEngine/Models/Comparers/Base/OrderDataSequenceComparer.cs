@@ -1,4 +1,5 @@
 using TradingEngine.Models.Interfaces;
+using TradingEngine.Models.Orders.Interfaces;
 
 namespace TradingEngine.Models.Comparers.Base;
 
@@ -6,11 +7,10 @@ public abstract class OrderDataSequenceComparer : OrderEqualityComparer
 {
 	public override int Compare(IOrder? x, IOrder? y)
 	{
-		int result = 0;
-		bool nullsFound = TryFindNulls(x, y, ref result);
+		bool nullsFound = TryFindNulls(x, y);
 
 		if (nullsFound)
-			return result;
+			return 0;
 
 		if (Equals(x, y))
 			return 0;
@@ -29,20 +29,9 @@ public abstract class OrderDataSequenceComparer : OrderEqualityComparer
 		return 1;
 	}
 
-	protected bool TryFindNulls(IOrder? x, IOrder? y, ref int result)
+	protected bool TryFindNulls(IOrder? x, IOrder? y)
 	{
-		if (x is null)
-		{
-			result = 1;
-			return true;
-		}
-
-		if (y is null)
-		{
-			result = -1;
-			return true;
-		}
-
-		return false;
+		return x is null
+		       || y is null;
 	}
 }

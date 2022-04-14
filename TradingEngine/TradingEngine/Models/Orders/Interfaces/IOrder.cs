@@ -1,6 +1,6 @@
 using TradingEngine.Enums;
 
-namespace TradingEngine.Models.Interfaces;
+namespace TradingEngine.Models.Orders.Interfaces;
 
 public interface IOrder
 {

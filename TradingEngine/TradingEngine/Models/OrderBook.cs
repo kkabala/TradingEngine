@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using TradingEngine.Enums;
 using TradingEngine.Models.Interfaces;
+using TradingEngine.Models.Orders.Interfaces;
 
 namespace TradingEngine.Models;
 
@@ -34,8 +35,8 @@ public class OrderBook : IOrderBook
 		var sb = new StringBuilder();
 		var buyOrdersPrintout = _buyOrders.Select(o => o.ToString());
 		var sellOrdersPrintout = _sellOrders.Select(o => o.ToString());
-		sb.AppendLine($"Buy Orders: [{sb.Append(string.Join(Environment.NewLine, buyOrdersPrintout))}]");
-		sb.AppendLine($"Sell Orders: [{sb.Append(string.Join(Environment.NewLine, sellOrdersPrintout))}]");
+		sb.AppendLine($"Buy Orders: [{string.Join(" ", buyOrdersPrintout)}]");
+		sb.AppendLine($"Sell Orders: [{string.Join(" ", sellOrdersPrintout)}]");
 
 		return sb.ToString();
 	}

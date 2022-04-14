@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using TradingEngine.Models.Comparers.Base;
 using TradingEngine.Models.Interfaces;
+using TradingEngine.Models.Orders.Interfaces;
 
 namespace TradingEngine.Tests.Models.Comparers.Base;
 
