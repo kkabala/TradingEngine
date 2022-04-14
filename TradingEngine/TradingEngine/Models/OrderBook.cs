@@ -30,6 +30,16 @@ public class OrderBook : IOrderBook
 		_orderSideToSetDictionary[order.Side].Add(order);
 	}
 
+	public void Process(IOrder order)
+	{
+		Add(order);
+	}
+
+	public IReadOnlySet<IOrder> GetAll(OrderSide side)
+	{
+		return _orderSideToSetDictionary[side];
+	}
+
 	public override string ToString()
 	{
 		var sb = new StringBuilder();

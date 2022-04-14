@@ -7,6 +7,7 @@ using NUnit.Framework;
 using TradingEngine.Enums;
 using TradingEngine.Enums.Extensions;
 using TradingEngine.Models;
+using TradingEngine.Models.Orders;
 using TradingEngine.Models.Orders.Interfaces;
 
 namespace TradingEngine.Tests;
@@ -15,7 +16,7 @@ public class OrderBookTests
 {
 	private OrderBook _orderBook = null!;
 
-	private readonly Dictionary<OrderSide, string> OrderSideToPrintoutStartLabelDictionary = new()
+	private readonly Dictionary<OrderSide, string> _orderSideToPrintoutStartLabelDictionary = new()
 	{
 		{ OrderSide.Buy, "Buy Orders:" },
 		{ OrderSide.Sell, "Sell Orders:" }
@@ -56,7 +57,7 @@ public class OrderBookTests
 	private void OrdersOfTargetSideAreIncludedInPrintout(OrderSide side)
 	{
 		//Arrange
-		string lineStartLabel = OrderSideToPrintoutStartLabelDictionary[side];
+		string lineStartLabel = _orderSideToPrintoutStartLabelDictionary[side];
 		var ordersMocks = AddTestOrdersToOrderBook(side);
 
 		//Act
@@ -86,7 +87,7 @@ public class OrderBookTests
 
 	private string GetPrintoutForOrderSide(OrderSide side)
 	{
-		string lineStartLabel = OrderSideToPrintoutStartLabelDictionary[side];
+		string lineStartLabel = _orderSideToPrintoutStartLabelDictionary[side];
 		string result = _orderBook.ToString();
 		string lineWithSpecifiedOrderSide = result
 			.Split(Environment.NewLine)
@@ -153,5 +154,41 @@ public class OrderBookTests
 			.Returns(() => mock.Object.Id);
 
 		return mock;
+	}
+
+	[Test]
+	public void LimitOrderIsAddedToOrderBook_WhenThereAreNoOrdersOfOppositeDirection([Values] OrderSide side)
+	{
+		//Arrange
+		var order = new LimitOrder("1", side, 1, 2);
+
+		//Act
+		_orderBook.Process(order);
+
+		//Assert
+		CheckIfParticularSideForOrderBookContainsTheOrder(order);
+	}
+
+	private void CheckIfParticularSideForOrderBookContainsTheOrder(IOrder order)
+	{
+		var result = _orderBook.GetAll(order.Side);
+
+		//Cannot use "Contains()" without mocking comparer even further
+		result
+			.Any(m => m.GetHashCode() == order.GetHashCode())
+			.Should()
+			.BeTrue();
+	}
+
+	[Test]
+	public void OrdersCanBeRetrievedCorrectlyForTheSideSpecified([Values] OrderSide side)
+	{
+		//Arrange
+		var orderMock = CreateOrderMock("order123", side, 5, 10);
+		var order = orderMock.Object;
+		_orderBook.Add(order);
+
+		//Act && Assert
+		CheckIfParticularSideForOrderBookContainsTheOrder(order);
 	}
 }
