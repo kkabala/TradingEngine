@@ -5,6 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using TradingEngine.Enums;
+using TradingEngine.Enums.Extensions;
 using TradingEngine.Models;
 using TradingEngine.Models.Orders.Interfaces;
 
@@ -13,6 +14,12 @@ namespace TradingEngine.Tests;
 public class OrderBookTests
 {
 	private OrderBook _orderBook = null!;
+
+	private readonly Dictionary<OrderSide, string> OrderSideToPrintoutStartLabelDictionary = new()
+	{
+		{ OrderSide.Buy, "Buy Orders:" },
+		{ OrderSide.Sell, "Sell Orders:" }
+	};
 
 	[SetUp]
 	public void Setup()
@@ -43,26 +50,18 @@ public class OrderBookTests
 	[Test]
 	public void BuyOrdersAreIncludedInPrintout()
 	{
-		OrdersOfTargetSideAreIncludedInPrintout(OrderSide.Buy, "Buy Orders:");
+		OrdersOfTargetSideAreIncludedInPrintout(OrderSide.Buy);
 	}
 
-	private void OrdersOfTargetSideAreIncludedInPrintout(OrderSide side, string lineStartLabel)
+	private void OrdersOfTargetSideAreIncludedInPrintout(OrderSide side)
 	{
 		//Arrange
-		var order1 = CreateOrderMock("bb", side, 2, 1);
-		var order2 = CreateOrderMock("bc", side, 1, 1);
-		var order3 = CreateOrderMock("dd", side, 3, 1);
-		var ordersMocks = new List<Mock<IOrder>>{ order1, order2, order3 };
-
-		_orderBook.Add(order1.Object);
-		_orderBook.Add(order2.Object);
-		_orderBook.Add(order3.Object);
+		string lineStartLabel = OrderSideToPrintoutStartLabelDictionary[side];
+		var ordersMocks = AddTestOrdersToOrderBook(side);
 
 		//Act
-		string result = _orderBook.ToString();
-		string lineWithSpecifiedOrderSide = result
-			.Split(Environment.NewLine)
-			.Single(m => m.StartsWith(lineStartLabel));
+		var lineWithSpecifiedOrderSide = GetPrintoutForOrderSide(side);
+
 
 		//Assert
 		lineWithSpecifiedOrderSide
@@ -73,23 +72,65 @@ public class OrderBookTests
 			order.Verify(o => o.ToString(), Times.Once);
 	}
 
+	private List<Mock<IOrder>> AddTestOrdersToOrderBook(OrderSide side)
+	{
+		var order1 = CreateOrderMock("bb", side, 2, 1);
+		var order2 = CreateOrderMock("bc", side, 1, 1);
+		var order3 = CreateOrderMock("dd", side, 3, 1);
+
+		_orderBook.Add(order1.Object);
+		_orderBook.Add(order2.Object);
+		_orderBook.Add(order3.Object);
+		return new List<Mock<IOrder>> { order1, order2, order3 };
+	}
+
+	private string GetPrintoutForOrderSide(OrderSide side)
+	{
+		string lineStartLabel = OrderSideToPrintoutStartLabelDictionary[side];
+		string result = _orderBook.ToString();
+		string lineWithSpecifiedOrderSide = result
+			.Split(Environment.NewLine)
+			.Single(m => m.StartsWith(lineStartLabel));
+
+		return lineWithSpecifiedOrderSide;
+	}
+
 	[Test]
 	public void SellOrdersAreNotIncludedInBuyPrintout()
 	{
-		//Arrange
+		OrdersOfOppositeDirectionAreNotIncludedIntoPrintout(OrderSide.Buy);
+	}
 
+	private void OrdersOfOppositeDirectionAreNotIncludedIntoPrintout(OrderSide side)
+	{
+		AddTestOrdersToOrderBook(side);
+
+		string oppositeSideOrderId = "oppositeSideOrder_5555";
+		var oppositeSideOrder = CreateOrderMock(oppositeSideOrderId, side.ToOppositeDirection(), 9, 99);
+		oppositeSideOrder
+			.Setup(m => m.ToString())
+			.Returns(oppositeSideOrderId);
+		_orderBook.Add(oppositeSideOrder.Object);
 
 		//Act
-
+		var sidePrintout = GetPrintoutForOrderSide(side);
 
 		//Assert
+		sidePrintout
+			.Should()
+			.NotContain(oppositeSideOrderId);
+	}
 
+	[Test]
+	public void BuyOrdersAreNotIncludedInSellPrintout()
+	{
+		OrdersOfOppositeDirectionAreNotIncludedIntoPrintout(OrderSide.Sell);
 	}
 
 	[Test]
 	public void SellOrdersAreIncludedInPrintout()
 	{
-		OrdersOfTargetSideAreIncludedInPrintout(OrderSide.Sell, "Sell Orders:");
+		OrdersOfTargetSideAreIncludedInPrintout(OrderSide.Sell);
 	}
 
 	private Mock<IOrder> CreateOrderMock(string orderId, OrderSide orderSide, int price, int quantity)
