@@ -30,27 +30,33 @@ public class OrderBookTests
 	}
 
 	[Test]
-	public void BuyOrdersWithHigherPriceAreOfHigherPriority()
+	public void BuyOrdersAreIncludedInPrintout()
 	{
 		//Arrange
 		var order1 = CreateOrderMock("bb", OrderSide.Buy, 2, 1);
 		var order2 = CreateOrderMock("bc", OrderSide.Buy, 1, 1);
 		var order3 = CreateOrderMock("dd", OrderSide.Buy, 3, 1);
+		var ordersMocks = new List<Mock<IOrder>>{ order1, order2, order3 };
 
-		_orderBook.Add(order1);
-		_orderBook.Add(order2);
-		_orderBook.Add(order3);
+		_orderBook.Add(order1.Object);
+		_orderBook.Add(order2.Object);
+		_orderBook.Add(order3.Object);
+
+		const string buyLabel = "Buy Orders:";
 
 		//Act
-		string result = _orderBook.GeneratePrintout();
+		string result = _orderBook.ToString();
 
 		//Assert
 		result
 			.Should()
-			.Be($"{order3.Id}\n{order1.Id}\n{order2.Id}");
+			.ContainAll(buyLabel);
+
+		foreach (var order in ordersMocks)
+			order.Verify(o => o.ToString(), Times.Once);
 	}
 
-	private IOrder CreateOrderMock(string orderId, OrderSide orderSide, int price, int quantity)
+	private Mock<IOrder> CreateOrderMock(string orderId, OrderSide orderSide, int price, int quantity)
 	{
 		var mock = new Mock<IOrder>();
 		mock
@@ -69,6 +75,6 @@ public class OrderBookTests
 			.Setup(m => m.ToString())
 			.Returns(() => mock.Object.Id);
 
-		return mock.Object;
+		return mock;
 	}
 }

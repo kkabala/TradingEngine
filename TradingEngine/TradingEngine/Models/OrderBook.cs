@@ -24,10 +24,12 @@ public class OrderBook : IOrderBook
 		_orders.Add(order);
 	}
 
-	public string GeneratePrintout()
+	public override string ToString()
 	{
+		const string buyOrdersLabel = "Buy Orders: ";
 		var sb = new StringBuilder();
 		var ordersPrintout = _orders.Select(o => o.ToString());
+		sb.Append(buyOrdersLabel);
 		sb.Append(string.Join(Environment.NewLine, ordersPrintout));
 
 		return sb.ToString();
